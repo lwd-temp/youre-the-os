@@ -42,9 +42,9 @@ class Process(GameObject):
         self._pages = []
 
         self._io_probability_numerator = int(
-            stage.config['io_probability'] * 100)
+            stage.config.io_probability * 100)
         self._graceful_termination_probability_numerator = int(
-            stage.config['graceful_termination_probability'] * 100
+            stage.config.graceful_termination_probability * 100
         )
 
         super().__init__(view_class(self))
@@ -119,8 +119,11 @@ class Process(GameObject):
             return float('inf')
         if self.is_blocked:
             return (LAST_ALIVE_STARVATION_LEVEL + 1) * 100000
-        return int((LAST_ALIVE_STARVATION_LEVEL - self.starvation_level) * 100000
-                - (self._last_update_time - self._last_starvation_level_change_time))
+        return int(
+            (LAST_ALIVE_STARVATION_LEVEL - self.starvation_level) * 100000
+                - (self.current_starvation_level_duration
+                   / self.time_between_starvation_levels) * 10000
+        )
 
     @property
     def is_in_motion(self):
